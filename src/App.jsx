@@ -30,26 +30,28 @@ export default function App() {
     setPlayer(playerData)
   }
 
+  const isAdminRoute = window.location.pathname === '/admin' || window.location.pathname === '/settings'
+
   return (
     <SettingsProvider>
       {loading ? (
         <div className="loading-screen">
           <div className="loading-pulse">INITIALIZING...</div>
         </div>
-      ) : !player ? (
+      ) : !player && !isAdminRoute ? (
         <RegisterPage onRegister={handleRegister} />
       ) : (
         <BrowserRouter>
           <div className="app-shell">
             <Routes>
-              <Route path="/" element={<MissionsPage player={player} />} />
+              <Route path="/" element={player ? <MissionsPage player={player} /> : <RegisterPage onRegister={handleRegister} />} />
               <Route path="/mission/:id" element={<MissionPage player={player} />} />
               <Route path="/leaderboard" element={<LeaderboardPage player={player} />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            <Nav />
+            {player && <Nav />}
           </div>
         </BrowserRouter>
       )}
