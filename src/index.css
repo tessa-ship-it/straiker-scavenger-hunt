@@ -311,6 +311,59 @@ p  { line-height: 1.55; }
   flex-direction: column;
 }
 
+.install-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--teal);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 999;
+  gap: 0.75rem;
+}
+
+.install-btn {
+  background: #000;
+  color: var(--teal);
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ios-hint {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.ios-hint-box {
+  background: var(--surface);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 320px;
+  text-align: left;
+  color: var(--text);
+}
+
+.ios-hint-box p { margin: 0 0 0.75rem; font-weight: 700; color: var(--gold); }
+.ios-hint-box ol { margin: 0 0 1.25rem; padding-left: 1.25rem; line-height: 2; }
+.ios-hint-box .install-btn { display: block; width: 100%; text-align: center; padding: 0.6rem; }
+
 .register-note {
   text-align: center;
   font-size: 0.7rem;
