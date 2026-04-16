@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useSettings } from '../context/SettingsContext'
 
 export default function RegisterPage({ onRegister }) {
+  const { settings } = useSettings()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -50,11 +52,15 @@ export default function RegisterPage({ onRegister }) {
     <div className="register-bg">
       <div className="register-card">
         <div className="register-header">
-          <div className="register-logo">📡</div>
-          <h1 className="register-title">STRAIKER</h1>
-          <p className="register-sub">SIGNAL DETECTION</p>
+          {settings.logo_url ? (
+            <img src={settings.logo_url} alt="Logo" className="register-brand-logo" />
+          ) : (
+            <div className="register-logo">📡</div>
+          )}
+          <h1 className="register-title">{settings.app_title}</h1>
+          <p className="register-sub">{settings.app_subtitle}</p>
           <div className="register-divider" />
-          <p className="register-tagline">LIVE OPS // CONFERENCE EDITION</p>
+          <p className="register-tagline">{settings.app_tagline}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="register-form">
