@@ -72,7 +72,7 @@ REASON: One sentence explaining your decision.`
 
     return res.status(200).json({ approved, reason })
   } catch (err) {
-    console.error('Verification error:', err)
-    return res.status(200).json({ approved: true, reason: 'Verification unavailable — points awarded.' })
+    console.error('Verification error:', err.message)
+    return res.status(200).json({ approved: false, reason: `Verification failed: ${err.message}. Please try again.` })
   }
 }
