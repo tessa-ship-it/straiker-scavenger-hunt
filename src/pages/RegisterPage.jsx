@@ -171,6 +171,7 @@ export default function RegisterPage({ onRegister }) {
               onChange={(e) => setJobTitle(e.target.value)}
               placeholder="Security Engineer"
               autoComplete="organization-title"
+              required
             />
           </div>
 
@@ -183,6 +184,7 @@ export default function RegisterPage({ onRegister }) {
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="Acme Corp"
               autoComplete="organization"
+              required
             />
           </div>
 
