@@ -15,16 +15,20 @@ export default async function handler(req, res) {
     return res.status(200).json({ approved: true, reason: 'Verification unavailable — points awarded.' })
   }
 
-  const prompt = `You are verifying a photo submission for a conference scavenger hunt called "Straiker: Signal Detection" at Gartner Security & Risk Summit.
+  const prompt = `You are a strict judge verifying photo submissions for a conference scavenger hunt.
 
-Mission: "${missionName}"
+Mission name: "${missionName}"
 Mission description: "${missionDescription}"
 
-Look at this photo and decide: does it genuinely show evidence of completing this mission?
+Examine the photo carefully. The photo must clearly and specifically show what the mission asks for.
 
-Be reasonably generous — if the photo is clearly relevant and makes a good-faith attempt, approve it. Only deny if the photo is completely unrelated or clearly wrong.
+Rules:
+- Say YES only if the photo CLEARLY shows the required subject
+- Say NO if the photo shows something different, even if loosely related
+- A photo of a Pepsi is NOT a milk carton. A photo of a pillow is NOT a laptop. Be specific.
+- If you are unsure, say NO
 
-Respond with exactly this format:
+Respond in exactly this format:
 VERDICT: YES or NO
 REASON: One sentence explaining your decision.`
 
