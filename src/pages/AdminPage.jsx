@@ -131,6 +131,12 @@ export default function AdminPage({ player }) {
     setPlayers(prev => prev.filter(p => p.id !== player.id))
   }
 
+  const handleResetPin = async (player) => {
+    if (!window.confirm(`Reset PIN for "${player.name}"? They'll be prompted to create a new one on next login.`)) return
+    await supabase.from('players').update({ pin: null }).eq('id', player.id)
+    setPlayers(prev => prev.map(p => p.id === player.id ? { ...p, pin: null } : p))
+  }
+
   const handleDownloadRegistrants = async () => {
     const { data } = await supabase
       .from('players')
@@ -412,9 +418,13 @@ export default function AdminPage({ player }) {
                       <span className="admin-item-name">{p.name}</span>
                       <span className="text-muted" style={{ fontSize: '0.75rem' }}>
                         {p.email} {p.company_name ? `· ${p.company_name}` : ''}
+                        {!p.pin && <span style={{ color: 'var(--gold)', marginLeft: '0.4rem' }}>· no PIN</span>}
                       </span>
                     </div>
-                    <button className="admin-btn-delete" onClick={() => handleDeletePlayer(p)}>✕</button>
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <button className="admin-btn-edit" title="Reset PIN" onClick={() => handleResetPin(p)}>🔑</button>
+                      <button className="admin-btn-delete" onClick={() => handleDeletePlayer(p)}>✕</button>
+                    </div>
                   </div>
                 ))}
               </div>

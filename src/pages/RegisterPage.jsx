@@ -33,7 +33,7 @@ export default function RegisterPage({ onRegister }) {
   const [existingPlayer, setExistingPlayer] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [confirmReset, setConfirmReset] = useState(false)
+  const [showForgotBanner, setShowForgotBanner] = useState(false)
   const [showIOSHint, setShowIOSHint] = useState(false)
   const { deferredPrompt, isInstalled, isIOS, isInStandaloneMode } = useInstallPrompt()
 
@@ -97,23 +97,6 @@ export default function RegisterPage({ onRegister }) {
       return
     }
     onRegister(existingPlayer)
-  }
-
-  // Forgot PIN — wipe progress and start fresh
-  const handleForgotPin = async () => {
-    setLoading(true)
-    try {
-      await supabase.from('submissions').delete().eq('player_id', existingPlayer.id)
-      await supabase.from('players').delete().eq('id', existingPlayer.id)
-      setExistingPlayer(null)
-      setConfirmReset(false)
-      setStep('new')
-    } catch (err) {
-      setError('Could not reset. Please try again.')
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
   }
 
   // Step 2b: new player — register with PIN
@@ -280,24 +263,18 @@ export default function RegisterPage({ onRegister }) {
               </div>
             )}
 
-            {confirmReset ? (
-              <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid var(--red, #ff4444)', borderRadius: '6px', textAlign: 'center' }}>
-                <p style={{ fontSize: '0.85rem', marginBottom: '0.75rem', color: 'var(--text-muted)' }}>
-                  ⚠️ This will delete all your progress and missions. You'll start fresh.
-                </p>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmReset(false)}>
-                    CANCEL
-                  </button>
-                  <button type="button" className="btn-primary" style={{ flex: 1, background: 'var(--red, #ff4444)' }} onClick={handleForgotPin} disabled={loading}>
-                    {loading ? 'RESETTING...' : 'YES, START OVER'}
+            {existingPlayer?.pin && (
+              showForgotBanner ? (
+                <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid var(--teal)', borderRadius: '6px', textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>📍 Visit the Straiker booth</p>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>A team member can reset your PIN for you.</p>
+                  <button type="button" className="btn-secondary" style={{ width: '100%' }} onClick={() => setShowForgotBanner(false)}>
+                    DISMISS
                   </button>
                 </div>
-              </div>
-            ) : (
-              existingPlayer?.pin && (
+              ) : (
                 <p style={{ textAlign: 'center', marginTop: '0.75rem' }}>
-                  <button type="button" onClick={() => setConfirmReset(true)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}>
+                  <button type="button" onClick={() => setShowForgotBanner(true)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}>
                     Forgot PIN?
                   </button>
                 </p>
@@ -308,7 +285,7 @@ export default function RegisterPage({ onRegister }) {
             <button type="submit" className="btn-primary">
               {!existingPlayer?.pin ? 'SET PIN & ENTER' : 'RESUME MISSION'}
             </button>
-            <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem' }} onClick={() => { setStep('email'); setPin(''); setNewPin(''); setConfirmPin(''); setError(''); setConfirmReset(false) }}>
+            <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem' }} onClick={() => { setStep('email'); setPin(''); setNewPin(''); setConfirmPin(''); setError(''); setShowForgotBanner(false) }}>
               ← BACK
             </button>
           </form>
