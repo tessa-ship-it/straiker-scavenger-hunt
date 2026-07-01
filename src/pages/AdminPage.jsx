@@ -112,6 +112,30 @@ export default function AdminPage({ player }) {
     await fetchMissions()
   }
 
+  const handleDownloadRegistrants = async () => {
+    const { data } = await supabase
+      .from('players')
+      .select('first_name, last_name, email, job_title, company_name, created_at')
+      .order('created_at')
+
+    if (!data || data.length === 0) { alert('No registrants yet.'); return }
+
+    const header = 'First Name,Last Name,Email,Job Title,Company,Registered At'
+    const rows = data.map(p =>
+      [p.first_name || '', p.last_name || '', p.email || '', p.job_title || '', p.company_name || '', p.created_at || '']
+        .map(v => `"${v}"`)
+        .join(',')
+    )
+    const csv = [header, ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `registrants-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const handleBulkUpload = async () => {
     setBulkError('')
     setBulkSuccess('')
@@ -210,7 +234,10 @@ export default function AdminPage({ player }) {
           <h2>MISSION CONTROL</h2>
           <p className="text-muted">{missions.length} missions total</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={handleDownloadRegistrants}>
+            ↓ REGISTRANTS
+          </button>
           <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={() => { setBulkOpen(true); setBulkError(''); setBulkSuccess('') }}>
             ↑ BULK UPLOAD
           </button>

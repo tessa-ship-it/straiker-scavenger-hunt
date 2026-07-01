@@ -21,8 +21,11 @@ function useInstallPrompt() {
 
 export default function RegisterPage({ onRegister }) {
   const { settings } = useSettings()
-  const [name, setName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [jobTitle, setJobTitle] = useState('')
+  const [companyName, setCompanyName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showIOSHint, setShowIOSHint] = useState(false)
@@ -39,13 +42,14 @@ export default function RegisterPage({ onRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!name.trim() || !email.trim()) return
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) return
 
     setLoading(true)
     setError('')
 
     try {
       const normalizedEmail = email.toLowerCase().trim()
+      const fullName = `${firstName.trim()} ${lastName.trim()}`
 
       // Check for existing player first
       const { data: existing } = await supabase
@@ -62,7 +66,14 @@ export default function RegisterPage({ onRegister }) {
       // Create new player
       const { data, error: insertError } = await supabase
         .from('players')
-        .insert([{ name: name.trim(), email: normalizedEmail }])
+        .insert([{
+          name: fullName,
+          email: normalizedEmail,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          job_title: jobTitle.trim() || null,
+          company_name: companyName.trim() || null,
+        }])
         .select()
         .single()
 
@@ -110,22 +121,36 @@ export default function RegisterPage({ onRegister }) {
         </div>
 
         <form onSubmit={handleSubmit} className="register-form">
-          <div className="form-group">
-            <label htmlFor="name">OPERATIVE NAME</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-              required
-              autoComplete="off"
-              autoFocus
-            />
+          <div className="register-row">
+            <div className="form-group">
+              <label htmlFor="firstName">FIRST NAME</label>
+              <input
+                id="firstName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Jane"
+                required
+                autoComplete="given-name"
+                autoFocus
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="lastName">LAST NAME</label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Smith"
+                required
+                autoComplete="family-name"
+              />
+            </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">SIGNAL ADDRESS</label>
+            <label htmlFor="email">EMAIL</label>
             <input
               id="email"
               type="email"
@@ -134,6 +159,30 @@ export default function RegisterPage({ onRegister }) {
               placeholder="your@email.com"
               required
               autoComplete="email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="jobTitle">JOB TITLE</label>
+            <input
+              id="jobTitle"
+              type="text"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              placeholder="Security Engineer"
+              autoComplete="organization-title"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="companyName">COMPANY</label>
+            <input
+              id="companyName"
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Acme Corp"
+              autoComplete="organization"
             />
           </div>
 
