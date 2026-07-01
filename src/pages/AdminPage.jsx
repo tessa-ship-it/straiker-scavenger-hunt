@@ -225,18 +225,18 @@ export default function AdminPage({ player }) {
         <div className="admin-modal-bg" onClick={() => setBulkOpen(false)}>
           <div className="admin-modal" onClick={e => e.stopPropagation()}>
             <h3 className="admin-modal-title">↑ BULK UPLOAD</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>
-              Paste CSV with columns: <code>name, description, points, category, icon, mission_type, riddle_answer</code><br />
+            <div style={{ background: 'rgba(248,200,133,0.07)', border: '1px solid rgba(248,200,133,0.2)', borderRadius: '8px', padding: '0.75rem', marginBottom: '1rem', fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              <strong style={{ color: 'var(--gold)' }}>Column order:</strong> name, description, points, category, icon, mission_type, riddle_answer<br />
               Category, icon, and riddle_answer are optional. First row can be a header.
-            </p>
+            </div>
             <div className="form-group">
               <label>CSV DATA</label>
               <textarea
                 value={bulkCSV}
                 onChange={e => { setBulkCSV(e.target.value); setBulkError(''); setBulkSuccess('') }}
-                placeholder={`name,description,points,category,icon,mission_type,riddle_answer\nThe Signal Seeker,Find the Straiker booth,100,Recon,📡,Photo,\nThe Riddle Master,I am always in front of you...,150,Riddle,🧩,Riddle,future`}
+                placeholder={"name,description,points,category,icon,mission_type,riddle_answer\nFind the Badge,Take a photo of your conference badge,100,Recon,,Photo,\nThe Answer,I have cities but no houses...,150,Riddle,,Riddle,map"}
                 rows={8}
-                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', color: 'var(--text)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.75rem', resize: 'vertical' }}
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', color: 'var(--text)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.75rem', resize: 'vertical', lineHeight: 1.6 }}
               />
             </div>
             {bulkError && <div className="error-msg">{bulkError}</div>}
