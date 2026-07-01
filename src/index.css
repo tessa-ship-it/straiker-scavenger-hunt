@@ -231,6 +231,18 @@ p  { line-height: 1.55; }
   letter-spacing: 0.04em;
   margin-bottom: 1rem;
 }
+.feedback-msg--verifying {
+  background: rgba(248, 200, 133, 0.1);
+  border: 1px solid rgba(248, 200, 133, 0.3);
+  color: var(--gold);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .feedback-msg--wrong {
   background: var(--red-dim);
   border: 1px solid rgba(212, 69, 71, 0.3);

@@ -89,8 +89,38 @@ export default function MissionPage({ player }) {
 
     setLoading(true)
     setError('')
+    setFeedback({ type: 'verifying', msg: '🔍  ANALYZING EVIDENCE...' })
 
     try {
+      // Convert photo to base64 for AI verification
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result.split(',')[1])
+        reader.onerror = reject
+        reader.readAsDataURL(photo)
+      })
+
+      // AI verification
+      const verifyRes = await fetch('/api/verify-photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageBase64: base64,
+          mimeType: photo.type,
+          missionName: mission.name,
+          missionDescription: mission.description,
+        }),
+      })
+
+      const { approved, reason } = await verifyRes.json()
+
+      if (!approved) {
+        setFeedback({ type: 'wrong', msg: `✗  EVIDENCE REJECTED — ${reason}` })
+        setLoading(false)
+        return
+      }
+
+      // Upload photo to storage
       const ext = photo.name.split('.').pop()
       const path = `${player.id}/${mission.id}-${Date.now()}.${ext}`
 
@@ -119,11 +149,12 @@ export default function MissionPage({ player }) {
           setAlreadyDone(true)
         } else throw insertErr
       } else {
-        setFeedback({ type: 'correct', msg: `✓  EVIDENCE SECURED — +${mission.points} PTS` })
+        setFeedback({ type: 'correct', msg: `✓  EVIDENCE SECURED — ${reason} +${mission.points} PTS` })
         setSubmitted(true)
       }
     } catch (err) {
       setError('Upload failed. Check your connection and try again.')
+      setFeedback(null)
       console.error(err)
     } finally {
       setLoading(false)
@@ -235,6 +266,12 @@ export default function MissionPage({ player }) {
                 />
               </div>
 
+              {feedback && feedback.type === 'verifying' && (
+                <div className="feedback-msg feedback-msg--verifying">{feedback.msg}</div>
+              )}
+              {feedback && feedback.type === 'wrong' && (
+                <div className="feedback-msg feedback-msg--wrong">{feedback.msg}</div>
+              )}
               {error && <div className="error-msg">{error}</div>}
 
               <button
@@ -242,7 +279,7 @@ export default function MissionPage({ player }) {
                 className="btn-primary"
                 disabled={loading || !photo}
               >
-                {loading ? 'UPLOADING...' : 'SUBMIT EVIDENCE'}
+                {loading ? (feedback?.type === 'verifying' ? 'ANALYZING...' : 'UPLOADING...') : 'SUBMIT EVIDENCE'}
               </button>
             </form>
           )}
