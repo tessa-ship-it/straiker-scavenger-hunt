@@ -25,7 +25,7 @@ export default function LeaderboardPage({ player }) {
   const fetchBoard = async () => {
     const { data, error } = await supabase
       .from('submissions')
-      .select('player_id, points_earned, players(name, email)')
+      .select('player_id, points_earned, players(name, first_name, email)')
 
     if (error) {
       console.error(error)
@@ -40,7 +40,7 @@ export default function LeaderboardPage({ player }) {
       if (!map[pid]) {
         map[pid] = {
           id: pid,
-          name: s.players?.name || 'Unknown',
+          name: s.players?.first_name || s.players?.name?.split(' ')[0] || 'Unknown',
           email: s.players?.email || '',
           points: 0,
           missions: 0,

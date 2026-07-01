@@ -36,6 +36,10 @@ export default function AdminPage({ player }) {
   const [bulkSuccess, setBulkSuccess] = useState('')
   const [bulkSaving, setBulkSaving] = useState(false)
 
+  const [players, setPlayers] = useState([])
+  const [playersOpen, setPlayersOpen] = useState(false)
+  const [playersLoading, setPlayersLoading] = useState(false)
+
   useEffect(() => {
     if (authed) fetchMissions()
   }, [authed])
@@ -110,6 +114,21 @@ export default function AdminPage({ player }) {
     if (!window.confirm(`Delete "${mission.name}"? This cannot be undone.`)) return
     await supabase.from('missions').delete().eq('id', mission.id)
     await fetchMissions()
+  }
+
+  const openPlayers = async () => {
+    setPlayersOpen(true)
+    setPlayersLoading(true)
+    const { data } = await supabase.from('players').select('*').order('created_at', { ascending: false })
+    if (data) setPlayers(data)
+    setPlayersLoading(false)
+  }
+
+  const handleDeletePlayer = async (player) => {
+    if (!window.confirm(`Remove "${player.name}"? This will also delete their submissions.`)) return
+    await supabase.from('submissions').delete().eq('player_id', player.id)
+    await supabase.from('players').delete().eq('id', player.id)
+    setPlayers(prev => prev.filter(p => p.id !== player.id))
   }
 
   const handleDownloadRegistrants = async () => {
@@ -235,6 +254,9 @@ export default function AdminPage({ player }) {
           <p className="text-muted">{missions.length} missions total</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={openPlayers}>
+            👥 PLAYERS
+          </button>
           <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={handleDownloadRegistrants}>
             ↓ REGISTRANTS
           </button>
@@ -369,6 +391,37 @@ export default function AdminPage({ player }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Players modal ── */}
+      {playersOpen && (
+        <div className="admin-modal-bg" onClick={() => setPlayersOpen(false)}>
+          <div className="admin-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="admin-modal-title">👥 PLAYERS ({players.length})</h3>
+            {playersLoading ? (
+              <div className="loading-pulse">LOADING...</div>
+            ) : players.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)' }}>No players registered yet.</p>
+            ) : (
+              <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                {players.map(p => (
+                  <div key={p.id} className="admin-row-item">
+                    <div className="admin-item-body">
+                      <span className="admin-item-name">{p.name}</span>
+                      <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                        {p.email} {p.company_name ? `· ${p.company_name}` : ''}
+                      </span>
+                    </div>
+                    <button className="admin-btn-delete" onClick={() => handleDeletePlayer(p)}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ marginTop: '1rem' }}>
+              <button className="btn-secondary" style={{ width: '100%' }} onClick={() => setPlayersOpen(false)}>CLOSE</button>
+            </div>
           </div>
         </div>
       )}
