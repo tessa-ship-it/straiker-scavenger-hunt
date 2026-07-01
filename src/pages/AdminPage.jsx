@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 
 // ── Change this password to whatever you like ──
 const ADMIN_PASSWORD = 'straiker-admin'
+const ADMIN_EMAIL = 'tessa@straiker.ai'
 
 const BLANK = {
   name: '',
@@ -14,7 +15,8 @@ const BLANK = {
   mission_type: 'Photo',
 }
 
-export default function AdminPage() {
+export default function AdminPage({ player }) {
+  const isAdminPlayer = player?.email?.toLowerCase() === ADMIN_EMAIL
   const [authed, setAuthed] = useState(false)
   const [pw, setPw] = useState('')
   const [pwError, setPwError] = useState(false)
@@ -22,8 +24,8 @@ export default function AdminPage() {
   const [missions, setMissions] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const [editing, setEditing] = useState(null)   // mission object being edited
-  const [adding, setAdding] = useState(false)     // show add form
+  const [editing, setEditing] = useState(null)
+  const [adding, setAdding] = useState(false)
   const [form, setForm] = useState(BLANK)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')

@@ -2,8 +2,11 @@ import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useSettings, DEFAULTS } from '../context/SettingsContext'
 
-export default function SettingsPage() {
+const ADMIN_EMAIL = 'tessa@straiker.ai'
+
+export default function SettingsPage({ player }) {
   const { settings, updateMany } = useSettings()
+  const isAdminPlayer = player?.email?.toLowerCase() === ADMIN_EMAIL
 
   const [authed, setAuthed]     = useState(false)
   const [pw, setPw]             = useState('')
