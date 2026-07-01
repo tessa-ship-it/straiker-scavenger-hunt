@@ -3,9 +3,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  // TEMP DEBUG: reject everything to confirm function is being called
-  return res.status(200).json({ approved: false, reason: 'TEST MODE: Function is working!' })
-
   const { imageBase64, mimeType, missionName, missionDescription } = req.body
 
   if (!imageBase64 || !missionName) {
