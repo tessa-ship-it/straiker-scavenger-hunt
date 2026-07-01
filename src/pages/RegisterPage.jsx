@@ -72,11 +72,26 @@ export default function RegisterPage({ onRegister }) {
     }
   }
 
-  // Step 2a: returning player — verify PIN
+  // Step 2a: returning player — verify PIN or set one if missing
   const handleReturningSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (existingPlayer.pin && pin !== existingPlayer.pin) {
+
+    // No PIN set yet — save the new one then log in
+    if (!existingPlayer.pin) {
+      if (!/^\d{4}$/.test(newPin)) { setError('PIN must be exactly 4 digits.'); return }
+      if (newPin !== confirmPin) { setError('PINs do not match.'); return }
+      const { error: updateErr } = await supabase
+        .from('players')
+        .update({ pin: newPin })
+        .eq('id', existingPlayer.id)
+      if (updateErr) { setError('Could not save PIN. Try again.'); return }
+      onRegister({ ...existingPlayer, pin: newPin })
+      return
+    }
+
+    // Has PIN — verify it
+    if (pin !== existingPlayer.pin) {
       setError('Incorrect PIN. Try again.')
       return
     }
@@ -193,24 +208,65 @@ export default function RegisterPage({ onRegister }) {
             <p className="register-note" style={{ marginBottom: '1rem', color: 'var(--teal)' }}>
               Welcome back, {existingPlayer?.first_name || existingPlayer?.name}!
             </p>
-            <div className="form-group">
-              <label htmlFor="pin">ENTER YOUR 4-DIGIT PIN</label>
-              <input
-                id="pin"
-                type="password"
-                inputMode="numeric"
-                maxLength={4}
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                placeholder="••••"
-                required
-                autoFocus
-                style={{ letterSpacing: '0.5em', fontSize: '1.5rem', textAlign: 'center' }}
-              />
-            </div>
+
+            {!existingPlayer?.pin ? (
+              <>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                  Create a 4-digit PIN to secure your account.
+                </p>
+                <div className="register-row">
+                  <div className="form-group">
+                    <label>CREATE PIN</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={4}
+                      value={newPin}
+                      onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="4 digits"
+                      required
+                      autoFocus
+                      style={{ textAlign: 'center', letterSpacing: '0.3em' }}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>CONFIRM PIN</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={4}
+                      value={confirmPin}
+                      onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="4 digits"
+                      required
+                      style={{ textAlign: 'center', letterSpacing: '0.3em' }}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="form-group">
+                <label htmlFor="pin">ENTER YOUR 4-DIGIT PIN</label>
+                <input
+                  id="pin"
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                  placeholder="••••"
+                  required
+                  autoFocus
+                  style={{ letterSpacing: '0.5em', fontSize: '1.5rem', textAlign: 'center' }}
+                />
+              </div>
+            )}
+
             {error && <div className="error-msg">{error}</div>}
-            <button type="submit" className="btn-primary">RESUME MISSION</button>
-            <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem' }} onClick={() => { setStep('email'); setPin(''); setError('') }}>
+            <button type="submit" className="btn-primary">
+              {!existingPlayer?.pin ? 'SET PIN & ENTER' : 'RESUME MISSION'}
+            </button>
+            <button type="button" className="btn-secondary" style={{ marginTop: '0.5rem' }} onClick={() => { setStep('email'); setPin(''); setNewPin(''); setConfirmPin(''); setError('') }}>
               ← BACK
             </button>
           </form>
