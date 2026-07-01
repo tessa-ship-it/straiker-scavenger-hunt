@@ -1,6 +1,10 @@
 import { NavLink } from 'react-router-dom'
 
-export default function Nav() {
+const ADMIN_EMAIL = 'tessa@straiker.ai'
+
+export default function Nav({ player }) {
+  const isAdmin = player?.email?.toLowerCase() === ADMIN_EMAIL
+
   return (
     <nav className="bottom-nav">
       <NavLink
@@ -18,6 +22,15 @@ export default function Nav() {
         <span className="nav-icon">📊</span>
         <span className="nav-label">LEADERBOARD</span>
       </NavLink>
+      {isAdmin && (
+        <NavLink
+          to="/admin"
+          className={({ isActive }) => `nav-item${isActive ? ' nav-item--active' : ''}`}
+        >
+          <span className="nav-icon">⚙️</span>
+          <span className="nav-label">ADMIN</span>
+        </NavLink>
+      )}
     </nav>
   )
 }

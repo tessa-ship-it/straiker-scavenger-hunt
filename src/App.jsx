@@ -47,11 +47,11 @@ export default function App() {
               <Route path="/" element={player ? <MissionsPage player={player} /> : <RegisterPage onRegister={handleRegister} />} />
               <Route path="/mission/:id" element={<MissionPage player={player} />} />
               <Route path="/leaderboard" element={<LeaderboardPage player={player} />} />
-              <Route path="/admin" element={<AdminPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/admin" element={<AdminPage player={player} />} />
+              <Route path="/settings" element={<SettingsPage player={player} />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            {player && <Nav />}
+            {player && <Nav player={player} />}
           </div>
         </BrowserRouter>
       )}
