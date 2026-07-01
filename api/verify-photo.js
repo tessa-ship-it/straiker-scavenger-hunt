@@ -12,8 +12,9 @@ export default async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     console.error('GEMINI_API_KEY not set')
-    return res.status(200).json({ approved: true, reason: 'Verification unavailable — points awarded.' })
+    return res.status(200).json({ approved: false, reason: 'AI verification not configured — contact admin.' })
   }
+  console.log('API key found, first 6 chars:', apiKey.substring(0, 6))
 
   const prompt = `You are a strict judge verifying photo submissions for a conference scavenger hunt.
 
