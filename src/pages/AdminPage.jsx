@@ -30,6 +30,12 @@ export default function AdminPage({ player }) {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
+  const [bulkOpen, setBulkOpen] = useState(false)
+  const [bulkCSV, setBulkCSV] = useState('')
+  const [bulkError, setBulkError] = useState('')
+  const [bulkSuccess, setBulkSuccess] = useState('')
+  const [bulkSaving, setBulkSaving] = useState(false)
+
   useEffect(() => {
     if (authed) fetchMissions()
   }, [authed])
@@ -106,6 +112,65 @@ export default function AdminPage({ player }) {
     await fetchMissions()
   }
 
+  const handleBulkUpload = async () => {
+    setBulkError('')
+    setBulkSuccess('')
+    setBulkSaving(true)
+
+    try {
+      const lines = bulkCSV.trim().split('\n').filter(l => l.trim())
+      // Skip header row if it starts with "name"
+      const dataLines = lines[0].toLowerCase().startsWith('name') ? lines.slice(1) : lines
+
+      if (dataLines.length === 0) {
+        setBulkError('No missions found in CSV.')
+        setBulkSaving(false)
+        return
+      }
+
+      const nextId = missions.length > 0 ? Math.max(...missions.map(m => m.id)) + 1 : 1
+      const parsed = dataLines.map((line, i) => {
+        // Handle quoted fields with commas inside
+        const cols = []
+        let cur = '', inQuote = false
+        for (const ch of line) {
+          if (ch === '"') { inQuote = !inQuote }
+          else if (ch === ',' && !inQuote) { cols.push(cur.trim()); cur = '' }
+          else cur += ch
+        }
+        cols.push(cur.trim())
+
+        const [name, description, points, category, icon, mission_type, riddle_answer] = cols
+        return {
+          id: nextId + i,
+          name: name || '',
+          description: description || '',
+          points: parseInt(points) || 100,
+          category: category || '',
+          icon: icon || '🎯',
+          mission_type: mission_type === 'Riddle' ? 'Riddle' : 'Photo',
+          riddle_answer: riddle_answer || null,
+        }
+      }).filter(m => m.name)
+
+      if (parsed.length === 0) {
+        setBulkError('Could not parse any missions. Check your CSV format.')
+        setBulkSaving(false)
+        return
+      }
+
+      const { error } = await supabase.from('missions').insert(parsed)
+      if (error) throw error
+
+      await fetchMissions()
+      setBulkSuccess(`✓ ${parsed.length} missions added successfully!`)
+      setBulkCSV('')
+    } catch (err) {
+      setBulkError(err.message)
+    }
+    setBulkSaving(false)
+  }
+
   // ── Password screen ──────────────────────────────────
   if (!authed) {
     return (
@@ -145,10 +210,46 @@ export default function AdminPage({ player }) {
           <h2>MISSION CONTROL</h2>
           <p className="text-muted">{missions.length} missions total</p>
         </div>
-        <button className="btn-primary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={openAdd}>
-          + ADD MISSION
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={() => { setBulkOpen(true); setBulkError(''); setBulkSuccess('') }}>
+            ↑ BULK UPLOAD
+          </button>
+          <button className="btn-primary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={openAdd}>
+            + ADD MISSION
+          </button>
+        </div>
       </div>
+
+      {/* ── Bulk upload modal ── */}
+      {bulkOpen && (
+        <div className="admin-modal-bg" onClick={() => setBulkOpen(false)}>
+          <div className="admin-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="admin-modal-title">↑ BULK UPLOAD</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>
+              Paste CSV with columns: <code>name, description, points, category, icon, mission_type, riddle_answer</code><br />
+              Category, icon, and riddle_answer are optional. First row can be a header.
+            </p>
+            <div className="form-group">
+              <label>CSV DATA</label>
+              <textarea
+                value={bulkCSV}
+                onChange={e => { setBulkCSV(e.target.value); setBulkError(''); setBulkSuccess('') }}
+                placeholder={`name,description,points,category,icon,mission_type,riddle_answer\nThe Signal Seeker,Find the Straiker booth,100,Recon,📡,Photo,\nThe Riddle Master,I am always in front of you...,150,Riddle,🧩,Riddle,future`}
+                rows={8}
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', color: 'var(--text)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.75rem', resize: 'vertical' }}
+              />
+            </div>
+            {bulkError && <div className="error-msg">{bulkError}</div>}
+            {bulkSuccess && <div className="feedback-msg feedback-msg--correct">{bulkSuccess}</div>}
+            <div className="admin-form-actions">
+              <button className="btn-secondary" onClick={() => setBulkOpen(false)}>CANCEL</button>
+              <button className="btn-primary" onClick={handleBulkUpload} disabled={bulkSaving || !bulkCSV.trim()} style={{ flex: 1 }}>
+                {bulkSaving ? 'UPLOADING...' : 'UPLOAD MISSIONS'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Form modal ── */}
       {showForm && (
@@ -195,8 +296,8 @@ export default function AdminPage({ player }) {
               </div>
 
               <div className="form-group">
-                <label>CATEGORY</label>
-                <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Signal Detection" required />
+                <label>CATEGORY <span style={{color:'var(--text-muted)',fontWeight:400}}>(optional)</span></label>
+                <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Signal Detection" />
               </div>
 
               <div className="form-group">
