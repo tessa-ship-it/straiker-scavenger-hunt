@@ -1,41 +1,69 @@
 /* ═══════════════════════════════════════════════════════
    STRAIKER: SIGNAL DETECTION — Design System
-   Palette from straiker.ai
+   Brand-kit aligned: Sunset · Mango · Frost · Pressio · VT323
    ─────────────────────────────────────────────────────── */
 
+@font-face {
+  font-family: "Pressio No. 34 Condensed";
+  src: url("/fonts/pressio-no34.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "VT323";
+  src: url("/fonts/VT323-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
-  /* ── Brand Colors ── */
-  --gold:          #f8c885;   /* Straiker primary gold */
-  --gold-dark:     #ffb84d;   /* Darker gold / hover */
+  /* ── Straiker Brand Colors ── */
+  --sunset:        #cd5d86;   /* Primary CTA / hero accent */
+  --sunset-hover:  #ef6c9a;   /* Brighter pink on hover */
+  --sunset-dim:    rgba(205, 93, 134, 0.12);
+  --sunset-glow:   rgba(205, 93, 134, 0.25);
+
+  --gold:          #f8c885;   /* Mango — eyebrows, labels, accents */
+  --gold-dark:     #ffc871;   /* Brighter orange */
   --gold-dim:      rgba(248, 200, 133, 0.12);
-  --gold-glow:     rgba(248, 200, 133, 0.25);
+  --gold-glow:     rgba(248, 200, 133, 0.20);
 
-  --teal:          #79ffd9;   /* Success / completion */
-  --teal-dim:      rgba(121, 255, 217, 0.10);
+  --teal:          #79ffd5;   /* Frost — success / completion */
+  --teal-dim:      rgba(121, 255, 213, 0.10);
 
-  --red:           #d44547;   /* Error / danger */
-  --red-dim:       rgba(212, 69, 71, 0.12);
+  --red:           #d93f62;   /* Ascend red — error / danger */
+  --red-dim:       rgba(217, 63, 98, 0.12);
 
   /* ── Background / Surface ── */
-  --bg:            #19140e;   /* Straiker warm black */
-  --surface:       #1f1a13;
-  --card:          #251e15;
-  --card-hover:    #2c2419;
-  --border:        #332b1f;
-  --border-focus:  #f8c885;
+  --bg:            #1d1e1f;   /* Straiker black */
+  --surface:       #262729;
+  --card:          #2a2b2d;
+  --card-hover:    #303133;
+  --border:        rgba(255,255,255,0.08);
+  --border-focus:  #cd5d86;
 
   /* ── Text ── */
-  --text:          #eeead7;   /* Straiker off-white */
-  --text-muted:    #7a6e5e;
-  --text-dim:      #3d3529;
+  --text:          #e8e8e8;
+  --text-muted:    #888888;
+  --text-dim:      #444447;
 
   /* ── Typography ── */
-  --font-body:    'Inter', Arial, sans-serif;
-  --font-mono:    'Roboto Mono', 'Courier New', monospace;
+  --font-display: 'Pressio No. 34 Condensed', 'Oswald', sans-serif;
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'VT323', 'IBM Plex Mono', 'Courier New', monospace;
 
   /* ── Layout ── */
   --radius:        2px;
   --nav-h:         62px;
+
+  /* ── Gradient ── */
+  --gradient-brand: linear-gradient(135deg, #f8c885, #cd5d86);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -68,8 +96,23 @@ button { font-family: var(--font-body); }
 /* ═══════════════════════════════════════════════════════
    TYPOGRAPHY
    ═══════════════════════════════════════════════════════ */
-h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
-h2 { font-size: 1rem;   font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #fff;
+}
+h2 {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+}
 h3 { font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
 p  { line-height: 1.55; }
 
@@ -125,18 +168,19 @@ p  { line-height: 1.55; }
   display: block;
   width: 100%;
   padding: 0.85rem 1.5rem;
-  background: var(--gold);
-  color: var(--bg);
+  background: var(--sunset);
+  color: #fff;
   border: none;
   border-radius: var(--radius);
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
+  transition: background 0.15s, transform 0.1s;
 }
-.btn-primary:hover    { opacity: 0.88; }
+.btn-primary:hover    { background: var(--sunset-hover); }
 .btn-primary:active   { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
 
@@ -148,14 +192,15 @@ p  { line-height: 1.55; }
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+.btn-secondary:hover { border-color: var(--sunset); color: var(--sunset); }
 
 .btn-back {
   display: inline-flex;
@@ -184,11 +229,11 @@ p  { line-height: 1.55; }
 .form-group label {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--gold);
   margin-bottom: 0.4rem;
 }
 
@@ -207,7 +252,7 @@ p  { line-height: 1.55; }
   -webkit-appearance: none;
 }
 
-.form-group input:focus { border-color: var(--gold); }
+.form-group input:focus { border-color: var(--sunset); }
 .form-group input::placeholder { color: var(--text-dim); }
 
 .error-msg {
@@ -265,8 +310,11 @@ p  { line-height: 1.55; }
   padding: 2rem 1rem;
   background: var(--bg);
   background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(248,200,133,0.03) 48px, rgba(248,200,133,0.03) 49px),
-    repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(248,200,133,0.03) 48px, rgba(248,200,133,0.03) 49px);
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 100%);
 }
 
 .register-card {
@@ -291,18 +339,21 @@ p  { line-height: 1.55; }
 }
 
 .register-title {
-  font-size: 2.2rem;
-  letter-spacing: 0.18em;
-  color: var(--gold);
-  line-height: 1;
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 0.95;
 }
 
 .register-sub {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   letter-spacing: 0.22em;
-  color: var(--text-muted);
-  margin-top: 0.3rem;
+  color: var(--gold);
+  margin-top: 0.4rem;
 }
 
 .register-divider {
@@ -492,7 +543,7 @@ p  { line-height: 1.55; }
 
 .mission-card:hover,
 .mission-card:active {
-  border-color: var(--gold);
+  border-color: var(--sunset);
   background: var(--card-hover);
 }
 
@@ -658,7 +709,7 @@ p  { line-height: 1.55; }
 .briefing-block {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--sunset);
   padding: 1rem 1.1rem;
   margin-bottom: 1.5rem;
   border-radius: var(--radius);
@@ -797,8 +848,8 @@ p  { line-height: 1.55; }
 }
 
 .board-row--me {
-  border-color: var(--gold);
-  background: var(--gold-dim);
+  border-color: var(--sunset);
+  background: var(--sunset-dim);
 }
 .board-row--gold   { border-left: 3px solid #FFD700; }
 .board-row--silver { border-left: 3px solid #C0C0C0; }
@@ -888,12 +939,12 @@ p  { line-height: 1.55; }
   -webkit-tap-highlight-color: transparent;
 }
 .nav-item:hover { color: var(--text); }
-.nav-item--active { color: var(--gold); }
+.nav-item--active { color: var(--sunset); }
 
 .nav-icon  { font-size: 1.3rem; }
 .nav-label {
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.65rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
