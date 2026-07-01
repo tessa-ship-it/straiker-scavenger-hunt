@@ -1,19 +1,18 @@
-export const config = { runtime: 'edge' }
-
-export default async function handler(req) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 })
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { imageBase64, mimeType, missionName, missionDescription } = await req.json()
+  const { imageBase64, mimeType, missionName, missionDescription } = req.body
 
   if (!imageBase64 || !missionName) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 })
+    return res.status(400).json({ error: 'Missing required fields' })
   }
 
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API key not configured' }), { status: 500 })
+    console.error('GEMINI_API_KEY not set')
+    return res.status(200).json({ approved: true, reason: 'Verification unavailable — points awarded.' })
   }
 
   const prompt = `You are verifying a photo submission for a conference scavenger hunt called "Straiker: Signal Detection" at Gartner Security & Risk Summit.
@@ -54,14 +53,16 @@ REASON: One sentence explaining your decision.`
       }
     )
 
+    const data = await response.json()
+    console.log('Gemini response:', JSON.stringify(data))
+
     if (!response.ok) {
-      const err = await response.text()
-      console.error('Gemini error:', err)
-      return new Response(JSON.stringify({ approved: true, reason: 'Verification unavailable — points awarded.' }), { status: 200 })
+      console.error('Gemini API error:', data)
+      return res.status(200).json({ approved: false, reason: `Verification error: ${data?.error?.message || 'Unknown error'}. Please try again.` })
     }
 
-    const data = await response.json()
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+    console.log('Gemini text:', text)
 
     const verdictMatch = text.match(/VERDICT:\s*(YES|NO)/i)
     const reasonMatch = text.match(/REASON:\s*(.+)/i)
@@ -69,13 +70,9 @@ REASON: One sentence explaining your decision.`
     const approved = verdictMatch?.[1]?.toUpperCase() === 'YES'
     const reason = reasonMatch?.[1]?.trim() || (approved ? 'Photo verified!' : 'Photo does not match the mission.')
 
-    return new Response(JSON.stringify({ approved, reason }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return res.status(200).json({ approved, reason })
   } catch (err) {
     console.error('Verification error:', err)
-    // Fail open — if AI is down, don't block players
-    return new Response(JSON.stringify({ approved: true, reason: 'Verification unavailable — points awarded.' }), { status: 200 })
+    return res.status(200).json({ approved: true, reason: 'Verification unavailable — points awarded.' })
   }
 }
