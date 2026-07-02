@@ -55,19 +55,20 @@ export default function MissionsPage({ player }) {
         </div>
       ) : (
         <div className="missions-list">
-          {missions.map((mission) => {
+          {missions.map((mission, idx) => {
             const done = completed.has(mission.id)
             return (
               <Link
                 key={mission.id}
                 to={`/mission/${mission.id}`}
                 className={`mission-card${done ? ' mission-card--done' : ''}`}
+                style={{ '--i': idx }}
               >
-                <div className="mc-icon">{mission.icon}</div>
+                <div className="mc-icon">{String(mission.id).padStart(2, '0')}</div>
                 <div className="mc-body">
                   <div className="mc-meta">
                     <span className={`type-badge type-badge--${mission.mission_type.toLowerCase()}`}>
-                      {mission.mission_type === 'Photo' ? '📷 PHOTO' : '🧩 RIDDLE'}
+                      {mission.mission_type === 'Photo' ? 'PHOTO' : 'RIDDLE'}
                     </span>
                     <span className="mc-category">{mission.category.toUpperCase()}</span>
                   </div>

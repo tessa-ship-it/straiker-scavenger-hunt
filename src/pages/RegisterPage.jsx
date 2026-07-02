@@ -147,7 +147,17 @@ export default function RegisterPage({ onRegister }) {
       {settings.logo_url ? (
         <img src={settings.logo_url} alt="Logo" className="register-brand-logo" />
       ) : (
-        <div className="register-logo">📡</div>
+        <div className="register-logo" aria-hidden="true">
+          <svg viewBox="0 0 34 49" fill="none">
+            <defs>
+              <linearGradient id="flourish" x1="0" y1="0" x2="34" y2="49" gradientUnits="userSpaceOnUse">
+                <stop stopColor="var(--rose)" />
+                <stop offset="1" stopColor="var(--gold)" />
+              </linearGradient>
+            </defs>
+            <path d="M21 1 L4 28 h10 L12 48 L30 19 h-11 Z" fill="url(#flourish)" />
+          </svg>
+        </div>
       )}
       <h1 className="register-title">{settings.app_title}</h1>
       <p className="register-sub">{settings.app_subtitle}</p>
@@ -160,7 +170,7 @@ export default function RegisterPage({ onRegister }) {
     <div className="register-bg">
       {!isInstalled && !isInStandaloneMode && (deferredPrompt || isIOS) && (
         <div className="install-banner">
-          <span>📲 Add to your home screen for the best experience</span>
+          <span>ADD TO HOME SCREEN for the full experience</span>
           <button onClick={handleInstall} className="install-btn">Install App</button>
         </div>
       )}

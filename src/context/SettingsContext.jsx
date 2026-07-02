@@ -11,9 +11,9 @@ export const DEFAULTS = {
   app_title: 'Straiker: Signal Detection',
   app_subtitle: 'SIGNAL DETECTION',
   app_tagline: 'LIVE OPS // CONFERENCE EDITION',
-  accent_color: '#f8c885',
-  bg_color: '#19140e',
-  surface_color: '#1f1a13',
+  accent_color: '#ffb829',
+  bg_color: '#0b0b0b',
+  surface_color: '#111111',
   logo_url: '',
   admin_password: 'straiker-admin',
 }

@@ -10,7 +10,6 @@ const BLANK = {
   description: '',
   points: 100,
   category: '',
-  icon: '🎯',
   riddle_answer: '',
   mission_type: 'Photo',
 }
@@ -89,7 +88,7 @@ export default function AdminPage({ player }) {
       description: form.description.trim(),
       points: parseInt(form.points),
       category: form.category.trim(),
-      icon: form.icon.trim(),
+      icon: null,
       riddle_answer: form.mission_type === 'Riddle' ? form.riddle_answer.trim() : null,
       mission_type: form.mission_type,
     }
@@ -189,14 +188,14 @@ export default function AdminPage({ player }) {
         }
         cols.push(cur.trim())
 
-        const [name, description, points, category, icon, mission_type, riddle_answer] = cols
+        const [name, description, points, category, mission_type, riddle_answer] = cols
         return {
           id: nextId + i,
           name: name || '',
           description: description || '',
           points: parseInt(points) || 100,
           category: category || '',
-          icon: icon || '🎯',
+          icon: null,
           mission_type: mission_type === 'Riddle' ? 'Riddle' : 'Photo',
           riddle_answer: riddle_answer || null,
         }
@@ -226,7 +225,7 @@ export default function AdminPage({ player }) {
       <div className="register-bg">
         <div className="register-card">
           <div className="register-header">
-            <div className="register-logo">🔐</div>
+            <div className="register-logo-glyph">[SEC]</div>
             <h1 className="register-title" style={{ fontSize: '1.5rem' }}>ADMIN</h1>
             <p className="register-sub">MISSION CONTROL</p>
           </div>
@@ -261,7 +260,7 @@ export default function AdminPage({ player }) {
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={openPlayers}>
-            👥 PLAYERS
+            PLAYERS
           </button>
           <button className="btn-secondary" style={{ width: 'auto', padding: '0.6rem 1rem' }} onClick={handleDownloadRegistrants}>
             ↓ REGISTRANTS
@@ -280,16 +279,16 @@ export default function AdminPage({ player }) {
         <div className="admin-modal-bg" onClick={() => setBulkOpen(false)}>
           <div className="admin-modal" onClick={e => e.stopPropagation()}>
             <h3 className="admin-modal-title">↑ BULK UPLOAD</h3>
-            <div style={{ background: 'rgba(248,200,133,0.07)', border: '1px solid rgba(248,200,133,0.2)', borderRadius: '8px', padding: '0.75rem', marginBottom: '1rem', fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              <strong style={{ color: 'var(--gold)' }}>Column order:</strong> name, description, points, category, icon, mission_type, riddle_answer<br />
-              Category, icon, and riddle_answer are optional. First row can be a header.
+            <div className="bulk-hint">
+              <strong>Column order:</strong> name, description, points, category, mission_type, riddle_answer<br />
+              Category and riddle_answer are optional. First row can be a header.
             </div>
             <div className="form-group">
               <label>CSV DATA</label>
               <textarea
                 value={bulkCSV}
                 onChange={e => { setBulkCSV(e.target.value); setBulkError(''); setBulkSuccess('') }}
-                placeholder={"name,description,points,category,icon,mission_type,riddle_answer\nFind the Badge,Take a photo of your conference badge,100,Recon,,Photo,\nThe Answer,I have cities but no houses...,150,Riddle,,Riddle,map"}
+                placeholder={"name,description,points,category,mission_type,riddle_answer\nFind the Badge,Take a photo of your conference badge,100,Recon,Photo,\nThe Answer,I have cities but no houses...,150,Riddle,Riddle,map"}
                 rows={8}
                 style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', color: 'var(--text)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.75rem', resize: 'vertical', lineHeight: 1.6 }}
               />
@@ -339,15 +338,9 @@ export default function AdminPage({ player }) {
                 />
               </div>
 
-              <div className="admin-row">
-                <div className="form-group" style={{ flex: 1 }}>
-                  <label>POINTS</label>
-                  <input type="number" value={form.points} onChange={(e) => setForm({ ...form, points: e.target.value })} min={1} required />
-                </div>
-                <div className="form-group" style={{ flex: 1 }}>
-                  <label>ICON (emoji)</label>
-                  <input type="text" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="🎯" />
-                </div>
+              <div className="form-group">
+                <label>POINTS</label>
+                <input type="number" value={form.points} onChange={(e) => setForm({ ...form, points: e.target.value })} min={1} required />
               </div>
 
               <div className="form-group">
@@ -363,14 +356,14 @@ export default function AdminPage({ player }) {
                     className={form.mission_type === 'Photo' ? 'admin-toggle-btn active' : 'admin-toggle-btn'}
                     onClick={() => setForm({ ...form, mission_type: 'Photo' })}
                   >
-                    📷 PHOTO
+                    PHOTO
                   </button>
                   <button
                     type="button"
                     className={form.mission_type === 'Riddle' ? 'admin-toggle-btn active' : 'admin-toggle-btn'}
                     onClick={() => setForm({ ...form, mission_type: 'Riddle' })}
                   >
-                    🧩 RIDDLE
+                    RIDDLE
                   </button>
                 </div>
               </div>
@@ -405,7 +398,7 @@ export default function AdminPage({ player }) {
       {playersOpen && (
         <div className="admin-modal-bg" onClick={() => setPlayersOpen(false)}>
           <div className="admin-modal" onClick={e => e.stopPropagation()}>
-            <h3 className="admin-modal-title">👥 PLAYERS ({players.length})</h3>
+            <h3 className="admin-modal-title">PLAYERS ({players.length})</h3>
             {playersLoading ? (
               <div className="loading-pulse">LOADING...</div>
             ) : players.length === 0 ? (
@@ -422,7 +415,7 @@ export default function AdminPage({ player }) {
                       </span>
                     </div>
                     <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      <button className="admin-btn-edit" title="Reset PIN" onClick={() => handleResetPin(p)}>🔑</button>
+                      <button className="admin-btn-edit" title="Reset PIN" onClick={() => handleResetPin(p)}>RESET PIN</button>
                       <button className="admin-btn-delete" onClick={() => handleDeletePlayer(p)}>✕</button>
                     </div>
                   </div>
@@ -443,7 +436,7 @@ export default function AdminPage({ player }) {
         <div className="admin-list">
           {missions.map((m) => (
             <div key={m.id} className="admin-row-item">
-              <span className="admin-item-icon">{m.icon}</span>
+              <span className="admin-item-icon">{String(m.id).padStart(2, '0')}</span>
               <div className="admin-item-body">
                 <span className="admin-item-name">{m.name}</span>
                 <span className="text-muted">{m.points} pts · {m.mission_type} · {m.category}</span>

@@ -56,12 +56,7 @@ export default function LeaderboardPage({ player }) {
     setLoading(false)
   }
 
-  const rankDisplay = (i) => {
-    if (i === 0) return '🥇'
-    if (i === 1) return '🥈'
-    if (i === 2) return '🥉'
-    return `#${i + 1}`
-  }
+  const rankDisplay = (i) => String(i + 1).padStart(2, '0')
 
   return (
     <div className="page leaderboard-page">
@@ -89,6 +84,7 @@ export default function LeaderboardPage({ player }) {
             return (
               <div
                 key={entry.id}
+                style={{ '--i': i }}
                 className={[
                   'board-row',
                   isMe ? 'board-row--me' : '',

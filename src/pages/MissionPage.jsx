@@ -89,7 +89,7 @@ export default function MissionPage({ player }) {
 
     setLoading(true)
     setError('')
-    setFeedback({ type: 'verifying', msg: '🔍  ANALYZING EVIDENCE...' })
+    setFeedback({ type: 'verifying', msg: '>> ANALYZING EVIDENCE...' })
 
     try {
       // Convert photo to base64 for AI verification
@@ -169,10 +169,10 @@ export default function MissionPage({ player }) {
 
       {/* Header */}
       <div className="mp-header">
-        <span className="mp-icon">{mission.icon}</span>
+        <span className="mp-icon">{String(mission.id).padStart(2, '0')}</span>
         <div className="mp-header-text">
           <span className={`type-badge type-badge--${mission.mission_type.toLowerCase()}`}>
-            {mission.mission_type === 'Photo' ? '📷 PHOTO' : '🧩 RIDDLE'}
+            {mission.mission_type === 'Photo' ? 'PHOTO' : 'RIDDLE'}
           </span>
           <h1 className="mp-title">{mission.name}</h1>
           <div className="mp-meta">
@@ -182,10 +182,12 @@ export default function MissionPage({ player }) {
         </div>
       </div>
 
-      {/* Briefing */}
+      {/* Briefing — Banner rail */}
       <div className="briefing-block">
-        <span className="briefing-tag">// MISSION BRIEFING</span>
-        <p className="briefing-text">{mission.description}</p>
+        <span className="briefing-rail" aria-hidden="true">BRIEFING</span>
+        <div className="briefing-body">
+          <p className="briefing-text">{mission.description}</p>
+        </div>
       </div>
 
       {/* Already complete */}
@@ -238,7 +240,13 @@ export default function MissionPage({ player }) {
                     </div>
                   ) : (
                     <div className="photo-empty">
-                      <span className="photo-empty-icon">📷</span>
+                      <span className="photo-empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+                          <path d="M3 8V4h4M21 8V4h-4M3 16v4h4M21 16v4h-4" />
+                          <circle cx="12" cy="12" r="4" />
+                          <rect x="11.2" y="11.2" width="1.6" height="1.6" fill="currentColor" stroke="none" />
+                        </svg>
+                      </span>
                       <span className="photo-empty-text">TAP TO CAPTURE EVIDENCE</span>
                       <span className="photo-empty-sub">Camera or gallery</span>
                     </div>

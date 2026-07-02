@@ -75,7 +75,7 @@ export default function SettingsPage({ player }) {
       <div className="register-bg">
         <div className="register-card">
           <div className="register-header">
-            <div className="register-logo">🎨</div>
+            <div className="register-logo-glyph">[SYS]</div>
             <h1 className="register-title" style={{ fontSize: '1.5rem' }}>APPEARANCE</h1>
             <p className="register-sub">SETTINGS PANEL</p>
           </div>
